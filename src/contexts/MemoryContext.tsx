@@ -1,22 +1,40 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const MemoryContext = createContext({});
+export interface Memory {
+  [key: string]: string;
+}
+
+export const MemoryContext = createContext<{
+  memory: Memory;
+  setMemory: React.Dispatch<React.SetStateAction<Memory>>;
+}>({ memory: {}, setMemory: () => {} });
 
 export function MemoryProvider({ children }: { children: React.ReactNode }) {
-  const [memory, setMemory] = useState(() => {
+  const [memory, setMemory] = useState<Memory>(() => {
     const savedMemory = localStorage.getItem("memory");
-    return savedMemory ? JSON.parse(savedMemory) : new Array(65536).fill(0);
+    if (savedMemory) {
+      return JSON.parse(savedMemory);
+    }
+
+    const initialMemory: Memory = {};
+    for (let i = 0; i < 65536; i++) {
+      initialMemory[i.toString(16).padStart(4, "0")] = "0";
+    }
+    return initialMemory;
   });
+
   useEffect(() => {
     localStorage.setItem("memory", JSON.stringify(memory));
   }, [memory]);
+
   return (
     <MemoryContext.Provider value={{ memory, setMemory }}>
       {children}
     </MemoryContext.Provider>
   );
 }
+
 export function useMemory() {
   return useContext(MemoryContext);
 }

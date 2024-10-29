@@ -37,15 +37,10 @@ export const InstructionProvider = ({
   const selectInstruction = (mnemonic: string) => {
     const instruction = instructions.find((inst) => inst.mnemonic === mnemonic);
     if (instruction) {
-      setSelectedInstructions((prev) => {
-        const exists = prev.some(
-          (inst) => inst.instruction.mnemonic === mnemonic
-        );
-        if (!exists) {
-          return [...prev, { instruction, sequenceNumber: prev.length + 1 }];
-        }
-        return prev;
-      });
+      setSelectedInstructions((prev) => [
+        ...prev,
+        { instruction, sequenceNumber: prev.length + 1 },
+      ]);
 
       setOperandsValues((prev) => ({
         ...prev,

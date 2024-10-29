@@ -11,6 +11,7 @@ import {
 import { parseInstructions } from "@/parser/parseInstructions";
 import { useRegisters } from "@/contexts/RegisterContext";
 import { useFlagRegisters } from "@/contexts/FlagRegisterContext";
+import { useMemory } from "@/contexts/MemoryContext";
 
 const InstructionDropdown = () => {
   const {
@@ -22,8 +23,10 @@ const InstructionDropdown = () => {
     generateDescription,
     operandsValues,
   } = useInstructions();
+
   const { registers, setRegisters } = useRegisters();
   const { flags, setFlags } = useFlagRegisters();
+  const { memory, setMemory } = useMemory();
 
   useEffect(() => {
     console.log("Selected Instructions:", selectedInstructions);
@@ -44,9 +47,19 @@ const InstructionDropdown = () => {
 
     console.log("Parsed Data:", parsedData);
 
-    parseInstructions(parsedData, registers, setRegisters, flags, setFlags);
+    parseInstructions(
+      parsedData,
+      registers,
+      setRegisters,
+      flags,
+      setFlags,
+      memory,
+      setMemory
+    );
+
     console.log("Registers after parseInstructions:", registers);
     console.log("Flags after parseInstructions:", flags);
+    console.log("Memory after parseInstructions:", memory);
   };
 
   return (
@@ -71,12 +84,15 @@ const InstructionDropdown = () => {
         <div>
           <h3>Operands:</h3>
           {selectedInstructions.map(
-            ({ instruction }: { instruction: Instruction }) => (
-              <div key={instruction.opcode} className="flex gap-3">
+            ({ instruction }: { instruction: Instruction }, index: number) => (
+              <div
+                key={`${instruction.mnemonic}-${index}`}
+                className="flex gap-3"
+              >
                 <h4>{instruction.mnemonic}</h4>
                 <ul>
-                  {instruction.operands.map((operand: string) => (
-                    <li key={operand}>
+                  {instruction.operands.map((operand: string, opIndex) => (
+                    <li key={opIndex}>
                       <input
                         placeholder={
                           operandsValues[instruction.mnemonic]?.[operand]
@@ -112,7 +128,7 @@ const InstructionDropdown = () => {
             instruction: Instruction;
             sequenceNumber: number;
           }) => (
-            <li key={sequenceNumber}>
+            <li key={`${instruction.mnemonic}-${sequenceNumber}`}>
               {sequenceNumber}. {instruction.mnemonic} - Operands:{" "}
               {instruction.operands.map((operand) => (
                 <span key={operand}>
