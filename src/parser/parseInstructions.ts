@@ -121,7 +121,31 @@ function parseInstruction(
       flags = setFlagsFromAccumulator(registers.A);
       break;
     }
+    case "XRI": {
+      const valueHex = instruction.operands[0].value;
+      const newValue =
+        parseInt(registers.A, 16) ^ (parseInt(valueHex, 16) & 0xff);
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
+      break;
+    }
 
+    case "ORI": {
+      const valueHex = instruction.operands[0].value;
+      const newValue =
+        parseInt(registers.A, 16) | (parseInt(valueHex, 16) & 0xff);
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
+      break;
+    }
+    case "CPI": {
+      const valueHex = instruction.operands[0].value;
+      const newValue =
+        (parseInt(registers.A, 16) - parseInt(valueHex, 16)) & 0xff;
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
+      break;
+    }
     default:
       console.warn(`Unhandled instruction mnemonic: ${instruction.mnemonic}`);
       break;
