@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
-interface Flags {
+export interface Flags {
   Z: boolean; // Zero flag
   P: boolean; // Parity flag
   AC: boolean; // Auxiliary Carry flag
@@ -51,7 +51,9 @@ export function useFlagRegisters() {
   const context = useContext(FlagRegisterContext);
 
   if (context === undefined) {
-    throw new Error("wrap with flag prov dumbass");
+    throw new Error(
+      "useFlagRegisters must be used within a FlagRegisterProvider"
+    );
   }
 
   return context;

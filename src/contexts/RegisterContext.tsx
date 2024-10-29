@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
-interface Registers {
+export interface Registers {
   A: string;
   B: string;
   C: string;
@@ -9,6 +9,7 @@ interface Registers {
   E: string;
   H: string;
   L: string;
+  SP: string;
   PC: string;
 }
 
@@ -34,6 +35,7 @@ export function RegisterProvider({ children }: { children: React.ReactNode }) {
           E: "00",
           H: "00",
           L: "00",
+          SP: "00",
           PC: "00",
         };
   });

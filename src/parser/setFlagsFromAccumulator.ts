@@ -1,4 +1,4 @@
-const setFlagsFromAccumulator = (AHex: string): any => {
+export const setFlagsFromAccumulator = (AHex: string): any => {
   const A = parseInt(AHex, 16);
 
   return {

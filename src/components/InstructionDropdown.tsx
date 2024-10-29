@@ -8,7 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { parseInstructions } from "@/parser/parseInstructions"; // Ensure this path is correct
+import { parseInstructions } from "@/parser/parseInstructions";
+import { useRegisters } from "@/contexts/RegisterContext";
+import { useFlagRegisters } from "@/contexts/FlagRegisterContext";
 
 const InstructionDropdown = () => {
   const {
@@ -18,14 +20,15 @@ const InstructionDropdown = () => {
     updateOperandValue,
     deleteInstruction,
     generateDescription,
-    operandsValues, // This now contains expected names and values
+    operandsValues,
   } = useInstructions();
+  const { registers, setRegisters } = useRegisters();
+  const { flags, setFlags } = useFlagRegisters();
 
   useEffect(() => {
-    console.log(selectedInstructions);
+    console.log("Selected Instructions:", selectedInstructions);
   }, [selectedInstructions]);
 
-  // Function to handle assembling and parsing instructions
   const handleAssemble = () => {
     const parsedData = selectedInstructions.map(
       ({ instruction }: { instruction: Instruction }) => ({
@@ -33,14 +36,17 @@ const InstructionDropdown = () => {
         operands: instruction.operands.map((operand) => ({
           name:
             operandsValues[instruction.mnemonic]?.[operand]?.expectedName ||
-            operand, // Use expected name
-          value: operandsValues[instruction.mnemonic]?.[operand]?.value || "", // Get user-entered value
+            operand,
+          value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
         })),
       })
     );
 
-    console.log(parsedData); // Log parsed data to verify correctness
-    parseInstructions(parsedData); // Call your parsing function here with parsedData
+    console.log("Parsed Data:", parsedData);
+
+    parseInstructions(parsedData, registers, setRegisters, flags, setFlags);
+    console.log("Registers after parseInstructions:", registers);
+    console.log("Flags after parseInstructions:", flags);
   };
 
   return (
@@ -81,7 +87,7 @@ const InstructionDropdown = () => {
                           updateOperandValue(
                             instruction.mnemonic,
                             operand,
-                            e.target.value // Update operand value as user types
+                            e.target.value
                           )
                         }
                       />
@@ -116,7 +122,7 @@ const InstructionDropdown = () => {
                   }
                   :
                   {operandsValues[instruction.mnemonic]?.[operand]?.value || ""}{" "}
-                </span> // Display expected name and actual user-entered value here
+                </span>
               ))}
               <button
                 onClick={() => deleteInstruction(sequenceNumber)}
@@ -132,7 +138,6 @@ const InstructionDropdown = () => {
       <h3>Description:</h3>
       <p>{generateDescription().join(", ")}</p>
 
-      {/* Assemble button to trigger parsing */}
       <button
         onClick={handleAssemble}
         className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"

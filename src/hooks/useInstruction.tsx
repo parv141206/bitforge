@@ -30,7 +30,6 @@ export const InstructionProvider = ({
     { instruction: Instruction; sequenceNumber: number }[]
   >([]);
 
-  // Store operand values with expected names and user-entered values
   const [operandsValues, setOperandsValues] = useState<{
     [key: string]: { [key: string]: { expectedName: string; value: string } };
   }>({});
@@ -45,16 +44,15 @@ export const InstructionProvider = ({
         if (!exists) {
           return [...prev, { instruction, sequenceNumber: prev.length + 1 }];
         }
-        return prev; // Do nothing if already selected
+        return prev;
       });
 
-      // Initialize operand values for the new instruction
       setOperandsValues((prev) => ({
         ...prev,
         [mnemonic]: Object.fromEntries(
           instruction.operands.map((operand) => [
             operand,
-            { expectedName: operand, value: "" }, // Initialize with empty value
+            { expectedName: operand, value: "" },
           ])
         ),
       }));
@@ -72,7 +70,7 @@ export const InstructionProvider = ({
         ...prev[mnemonic],
         [operand]: {
           ...prev[mnemonic][operand],
-          value, // Update only the value
+          value,
         },
       },
     }));
@@ -106,7 +104,7 @@ export const InstructionProvider = ({
         updateOperandValue,
         deleteInstruction,
         generateDescription,
-        operandsValues, // Expose operandsValues to context
+        operandsValues,
       }}
     >
       {children}

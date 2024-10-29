@@ -1,14 +1,6 @@
-/**
- *
- * Alright, so now I am writing parsers for this sim.
- * This means I officially give up on social life and pledge myself to the code.
- *
- * It's pain
- *
- */
-
-import { useRegisters } from "@/contexts/RegisterContext";
-import { useFlagRegisters } from "@/contexts/FlagRegisterContext";
+import { Registers, useRegisters } from "@/contexts/RegisterContext";
+import { Flags, useFlagRegisters } from "@/contexts/FlagRegisterContext";
+import { setFlagsFromAccumulator } from "./setFlagsFromAccumulator";
 
 interface Operand {
   name: string;
@@ -22,137 +14,111 @@ interface ParsedInstruction {
 
 export type { ParsedInstruction };
 
-export function parseInstructions(parsedData: ParsedInstruction[]) {
+export function parseInstructions(
+  parsedData: ParsedInstruction[],
+  registers: Registers,
+  setRegisters: React.Dispatch<React.SetStateAction<Registers>>,
+  flags: Flags,
+  setFlags: React.Dispatch<React.SetStateAction<Flags>>
+) {
+  let newRegisters = { ...registers };
+  let newFlags = { ...flags };
+
   parsedData.forEach((instruction) => {
-    parseInstruction(instruction);
+    const result = parseInstruction(instruction, newRegisters, newFlags);
+    newRegisters = result.registers;
+    newFlags = result.flags;
   });
+
+  setRegisters(newRegisters);
+  setFlags(newFlags);
 }
 
-function parseInstruction(instruction: ParsedInstruction) {
-  const { registers, setRegisters } = useRegisters();
-  const { flags, setFlags } = useFlagRegisters();
+function parseInstruction(
+  instruction: ParsedInstruction,
+  registers: Registers,
+  flags: Flags
+) {
+  const mviMapping: Record<string, keyof Registers> = {
+    "MVI A": "A",
+    "MVI B": "B",
+    "MVI C": "C",
+    "MVI D": "D",
+    "MVI E": "E",
+    "MVI H": "H",
+    "MVI L": "L",
+  };
+
+  if (mviMapping[instruction.mnemonic]) {
+    const registerKey = mviMapping[instruction.mnemonic];
+    registers[registerKey] = instruction.operands[0].value;
+    return { registers, flags };
+  }
 
   switch (instruction.mnemonic) {
-    case "MVI A":
-      setRegisters((prev) => ({
-        ...prev,
-        A: instruction.operands[0].value,
-      }));
-      break;
-
-    case "MVI B":
-      setRegisters((prev) => ({
-        ...prev,
-        B: instruction.operands[0].value,
-      }));
-      break;
-
-    case "MVI C":
-      setRegisters((prev) => ({
-        ...prev,
-        C: instruction.operands[0].value,
-      }));
-      break;
-
-    case "MVI D":
-      setRegisters((prev) => ({
-        ...prev,
-        D: instruction.operands[0].value,
-      }));
-      break;
-
-    case "MVI E":
-      setRegisters((prev) => ({
-        ...prev,
-        E: instruction.operands[0].value,
-      }));
-      break;
-
-    case "MVI H":
-      setRegisters((prev) => ({
-        ...prev,
-        H: instruction.operands[0].value,
-      }));
-      break;
-
-    case "MVI L":
-      setRegisters((prev) => ({
-        ...prev,
-        L: instruction.operands[0].value,
-      }));
-      break;
-
     case "LXI B":
-      setRegisters((prev) => ({
-        ...prev,
-        B: instruction.operands[0].value.substring(0, 2),
-        C: instruction.operands[0].value.substring(2, 4),
-      }));
+      registers.B = instruction.operands[0].value.substring(0, 2);
+      registers.C = instruction.operands[0].value.substring(2, 4);
       break;
 
     case "LXI D":
-      setRegisters((prev) => ({
-        ...prev,
-        D: instruction.operands[0].value.substring(0, 2),
-        E: instruction.operands[0].value.substring(2, 4),
-      }));
+      registers.D = instruction.operands[0].value.substring(0, 2);
+      registers.E = instruction.operands[0].value.substring(2, 4);
       break;
 
     case "LXI H":
-      setRegisters((prev) => ({
-        ...prev,
-        H: instruction.operands[0].value.substring(0, 2),
-        L: instruction.operands[0].value.substring(2, 4),
-      }));
+      registers.H = instruction.operands[0].value.substring(0, 2);
+      registers.L = instruction.operands[0].value.substring(2, 4);
       break;
 
     case "LXI SP":
-      setRegisters((prev) => ({
-        ...prev,
-        SP: instruction.operands[0].value,
-      }));
+      registers.SP = instruction.operands[0].value;
       break;
 
     case "ADI": {
       const valueHex = instruction.operands[0].value;
-
       const newValue =
         (parseInt(registers.A, 16) + parseInt(valueHex, 16)) & 0xff;
-
-      const updatedFlags = setFlagsFromAccumulator(
-        newValue.toString(16).padStart(2, "0")
-      );
-
-      setRegisters((prev) => ({
-        ...prev,
-        A: newValue.toString(16).padStart(2, "0"),
-      }));
-
-      setFlags(updatedFlags);
-
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
       break;
     }
 
     case "ACI": {
       const valueHex = instruction.operands[0].value;
-
+      const carry = flags.C ? 1 : 0;
       const newValue =
-        (parseInt(registers.A, 16) +
-          parseInt(valueHex, 16) +
-          parseInt(flags.C ? "1" : "0", 10)) &
-        0xff;
+        (parseInt(registers.A, 16) + parseInt(valueHex, 16) + carry) & 0xff;
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
+      break;
+    }
 
-      const updatedFlags = setFlagsFromAccumulator(
-        newValue.toString(16).padStart(2, "0")
-      );
+    case "SUI": {
+      const valueHex = instruction.operands[0].value;
+      const newValue =
+        (parseInt(registers.A, 16) - parseInt(valueHex, 16)) & 0xff;
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
+      break;
+    }
 
-      setRegisters((prev) => ({
-        ...prev,
-        A: newValue.toString(16).padStart(2, "0"),
-      }));
+    case "SBI": {
+      const valueHex = instruction.operands[0].value;
+      const carry = flags.C ? 1 : 0;
+      const newValue =
+        (parseInt(registers.A, 16) - parseInt(valueHex, 16) - carry) & 0xff;
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
+      break;
+    }
 
-      setFlags(updatedFlags);
-
+    case "ANI": {
+      const valueHex = instruction.operands[0].value;
+      const newValue =
+        parseInt(registers.A, 16) & parseInt(valueHex, 16) & 0xff;
+      registers.A = newValue.toString(16).padStart(2, "0");
+      flags = setFlagsFromAccumulator(registers.A);
       break;
     }
 
@@ -160,6 +126,6 @@ function parseInstruction(instruction: ParsedInstruction) {
       console.warn(`Unhandled instruction mnemonic: ${instruction.mnemonic}`);
       break;
   }
-  console.log("STATES:");
-  console.log(registers, flags);
+
+  return { registers, flags };
 }

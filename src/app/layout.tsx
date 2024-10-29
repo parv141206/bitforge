@@ -13,13 +13,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <MemoryProvider>
-        <RegisterProvider>
-          <FlagRegisterProvider>
+        <FlagRegisterProvider>
+          <RegisterProvider>
             <InstructionProvider>
               <body className={` antialiased`}>{children}</body>
             </InstructionProvider>
-          </FlagRegisterProvider>
-        </RegisterProvider>
+          </RegisterProvider>
+        </FlagRegisterProvider>
       </MemoryProvider>
     </html>
   );
