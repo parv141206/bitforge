@@ -28,3 +28,19 @@ registers.forEach((srcRegister) => {
     }
   });
 });
+
+const addBaseOpcode = 0x80;
+
+registers.forEach((srcRegister) => {
+  const uniqueOpcode = (addBaseOpcode + registers.indexOf(srcRegister))
+    .toString(16)
+    .toUpperCase();
+
+  RegisterModeInstructions.push({
+    opcode: uniqueOpcode,
+    mnemonic: `ADD ${srcRegister}`,
+    description: `Add data from register ${srcRegister} to accumulator A.`,
+    bytes: 1,
+    operands: [],
+  });
+});

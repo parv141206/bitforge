@@ -9,96 +9,126 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { parseInstructions } from "@/parser/parseInstructions";
-import { useRegisters } from "@/contexts/RegisterContext";
-import { useFlagRegisters } from "@/contexts/FlagRegisterContext";
+import { Registers, useRegisters } from "@/contexts/RegisterContext";
+import { Flags, useFlagRegisters } from "@/contexts/FlagRegisterContext";
 import { useMemory } from "@/contexts/MemoryContext";
+import { TiDelete } from "react-icons/ti";
 
-const InstructionDropdown = () => {
-  const {
-    instructions,
-    selectedInstructions,
-    selectInstruction,
-    updateOperandValue,
-    deleteInstruction,
-    generateDescription,
-    operandsValues,
-  } = useInstructions();
-
-  const { registers, setRegisters } = useRegisters();
-  const { flags, setFlags } = useFlagRegisters();
-  const { memory, setMemory } = useMemory();
+const InstructionDropdown = ({
+  instructions,
+  selectedInstructions,
+  selectInstruction,
+  updateOperandValue,
+  deleteInstruction,
+  operandsValues,
+  registers,
+  setRegisters,
+  flags,
+  setFlags,
+  memory,
+  setMemory,
+  handleAssemble,
+  ...rest
+}: {
+  instructions: Instruction[];
+  selectedInstructions: { instruction: Instruction; sequenceNumber: number }[];
+  selectInstruction: (mnemonic: string) => void;
+  updateOperandValue: (
+    mnemonic: string,
+    operand: string,
+    value: string
+  ) => void;
+  deleteInstruction: (sequenceNumber: number) => void;
+  operandsValues: {
+    [key: string]: { [key: string]: { expectedName: string; value: string } };
+  };
+  registers: Registers;
+  setRegisters: React.Dispatch<React.SetStateAction<Registers>>;
+  flags: Flags;
+  setFlags: React.Dispatch<React.SetStateAction<Flags>>;
+  memory: Record<string, string>;
+  setMemory: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  handleAssemble: () => void;
+}) => {
+  const [filteredInstructions, setFilteredInstructions] =
+    React.useState(instructions);
 
   useEffect(() => {
     console.log("Selected Instructions:", selectedInstructions);
   }, [selectedInstructions]);
 
-  const handleAssemble = () => {
-    const parsedData = selectedInstructions.map(
-      ({ instruction }: { instruction: Instruction }) => ({
-        mnemonic: instruction.mnemonic,
-        operands: instruction.operands.map((operand) => ({
-          name:
-            operandsValues[instruction.mnemonic]?.[operand]?.expectedName ||
-            operand,
-          value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
-        })),
-      })
-    );
-
-    console.log("Parsed Data:", parsedData);
-
-    parseInstructions(
-      parsedData,
-      registers,
-      setRegisters,
-      flags,
-      setFlags,
-      memory,
-      setMemory
-    );
-
-    console.log("Registers after parseInstructions:", registers);
-    console.log("Flags after parseInstructions:", flags);
-    console.log("Memory after parseInstructions:", memory);
-  };
-
   return (
-    <div>
+    <div className="">
       <DropdownMenu>
-        <DropdownMenuTrigger>Select an instruction</DropdownMenuTrigger>
-        <DropdownMenuContent className="h-96 overflow-y-scroll">
-          <DropdownMenuLabel>Instructions</DropdownMenuLabel>
+        <DropdownMenuTrigger className="px-4 py-2 text-sm bg-black border border-white/15 rounded hover:bg-white hover:text-black">
+          Add Instruction
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="h-80 overflow-y-scroll">
+          <DropdownMenuLabel>Select Instruction</DropdownMenuLabel>
+          <div className="p-2">
+            <input
+              type="text"
+              placeholder="Search Instructions..."
+              onChange={(e) => {
+                const searchText = e.target.value.toLowerCase();
+                const filteredInstructions = instructions.filter(
+                  (instruction: Instruction) =>
+                    instruction.mnemonic.toLowerCase().includes(searchText)
+                );
+                setFilteredInstructions(filteredInstructions);
+              }}
+              className="w-full p-1 border border-gray-300 rounded"
+            />
+          </div>
           <DropdownMenuSeparator />
-          {instructions.map((instruction: Instruction, index: number) => (
-            <DropdownMenuItem
-              key={index}
-              onClick={() => selectInstruction(instruction.mnemonic)}
-            >
-              {instruction.mnemonic}
-            </DropdownMenuItem>
-          ))}
+          {filteredInstructions.map(
+            (instruction: Instruction, index: number) => (
+              <DropdownMenuItem
+                key={index}
+                onClick={() => selectInstruction(instruction.mnemonic)}
+              >
+                {instruction.mnemonic}
+              </DropdownMenuItem>
+            )
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
       {selectedInstructions.length > 0 && (
-        <div>
-          <h3>Operands:</h3>
+        <div className="p-3 overflow-y-scroll h-">
           {selectedInstructions.map(
             ({ instruction }: { instruction: Instruction }, index: number) => (
               <div
                 key={`${instruction.mnemonic}-${index}`}
-                className="flex gap-3"
+                className="flex gap-3 items-center justify-start"
               >
+                <div className="border-s-2 border-blue-300 px-3">
+                  {" "}
+                  {index + 1}
+                </div>
                 <h4>{instruction.mnemonic}</h4>
-                <ul>
+                <ul className="flex flex-col">
                   {instruction.operands.map((operand: string, opIndex) => (
-                    <li key={opIndex}>
+                    <li key={opIndex} className="flex items-center gap-2">
                       <input
                         placeholder={
-                          operandsValues[instruction.mnemonic]?.[operand]
-                            ?.expectedName || operand
+                          (
+                            operandsValues[instruction.mnemonic]?.[operand]
+                              ?.expectedName || operand
+                          )
+                            .toString()
+                            .charAt(0)
+                            .toUpperCase() +
+                          (
+                            operandsValues[instruction.mnemonic]?.[operand]
+                              ?.expectedName || operand
+                          )
+                            .toString()
+                            .slice(1) +
+                          " (Hex)"
                         }
                         type="text"
+                        className="border w-32 border-gray-300 rounded px-2 py-1 text-white"
                         onChange={(e) =>
                           updateOperandValue(
                             instruction.mnemonic,
@@ -110,56 +140,24 @@ const InstructionDropdown = () => {
                     </li>
                   ))}
                 </ul>
+                <button
+                  onClick={() => deleteInstruction(index)}
+                  className="text-red-500 text-xl hover:text-red-700"
+                >
+                  <TiDelete />
+                </button>
               </div>
             )
           )}
         </div>
       )}
 
-      <hr />
-
-      <h3>Added Instructions:</h3>
-      <ul>
-        {selectedInstructions.map(
-          ({
-            instruction,
-            sequenceNumber,
-          }: {
-            instruction: Instruction;
-            sequenceNumber: number;
-          }) => (
-            <li key={`${instruction.mnemonic}-${sequenceNumber}`}>
-              {sequenceNumber}. {instruction.mnemonic} - Operands:{" "}
-              {instruction.operands.map((operand) => (
-                <span key={operand}>
-                  {
-                    operandsValues[instruction.mnemonic]?.[operand]
-                      ?.expectedName
-                  }
-                  :
-                  {operandsValues[instruction.mnemonic]?.[operand]?.value || ""}{" "}
-                </span>
-              ))}
-              <button
-                onClick={() => deleteInstruction(sequenceNumber)}
-                className="ml-2 text-red-500 hover:text-red-700"
-              >
-                Delete
-              </button>
-            </li>
-          )
-        )}
-      </ul>
-
-      <h3>Description:</h3>
-      <p>{generateDescription().join(", ")}</p>
-
-      <button
+      {/* <button
         onClick={handleAssemble}
-        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
+        className="bg-black text-sm text-white py-2 px-4 rounded border border-white/15 hover:bg-white hover:text-black"
       >
         Assemble
-      </button>
+      </button> */}
     </div>
   );
 };
