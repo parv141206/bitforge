@@ -69,6 +69,32 @@ function parseInstruction(
     return { registers, flags };
   }
 
+  const movRegex = /^MOV\s+([A-L]|M)\s*,\s*([A-L]|M)$/i;
+  const match = instruction.mnemonic.match(movRegex);
+
+  if (match) {
+    const destRegister = match[1];
+    const srcOperand = match[2];
+
+    if (srcOperand === "M") {
+      console.log("BOSS ITS THIS ONE");
+      registers[destRegister as keyof Registers] =
+        memory[registers.H + registers.L] || "00";
+    } else if (destRegister === "M") {
+      console.log("ALRIGHT");
+      console.log([destRegister as keyof Registers]);
+      memory[registers.H + registers.L] =
+        registers[srcOperand as keyof Registers];
+
+      return { registers, flags, memory };
+    } else {
+      registers[destRegister as keyof Registers] =
+        registers[srcOperand as keyof Registers];
+    }
+
+    return { registers, flags };
+  }
+
   let newValue: number | undefined;
 
   switch (instruction.mnemonic) {
@@ -98,24 +124,6 @@ function parseInstruction(
         0xff;
       registers.A = newValue.toString(16).padStart(2, "0");
       flags = setFlagsFromAccumulator(registers.A);
-      break;
-    }
-
-    case "STA": {
-      const addressHex = instruction.operands[0].value;
-      const address = addressHex.replace("h", "");
-
-      if (memory.hasOwnProperty(address)) {
-        memory[address] = registers.A;
-        console.log(
-          `Stored value ${registers.A} | ${parseInt(
-            registers.A,
-            16
-          )} at address ${address}`
-        );
-      } else {
-        console.warn(`Memory access out of bounds at address ${address}`);
-      }
       break;
     }
 
@@ -180,6 +188,63 @@ function parseInstruction(
       flags = setFlagsFromAccumulator(registers.A);
       break;
     }
+
+    // DIRECT ADDRESSING MODE INSTRUCTIONS
+
+    case "STA": {
+      const addressHex = instruction.operands[0].value;
+      const address = addressHex.replace("h", "");
+
+      if (memory.hasOwnProperty(address)) {
+        memory[address] = registers.A;
+        console.log(
+          `Stored value ${registers.A} | ${parseInt(
+            registers.A,
+            16
+          )} at address ${address}`
+        );
+      } else {
+        console.warn(`Memory access out of bounds at address ${address}`);
+      }
+      break;
+    }
+    case "LDA": {
+      const addressHex = instruction.operands[0].value;
+      const address = addressHex.replace("h", "");
+      if (memory.hasOwnProperty(address)) {
+        registers.A = memory[address];
+      } else {
+        console.warn(`Memory access out of bounds at address ${address}`);
+      }
+      break;
+    }
+    case "SHLD": {
+      const addressHex = instruction.operands[0].value;
+      const address = addressHex.replace("h", "");
+      if (memory.hasOwnProperty(address)) {
+        memory[address] = registers.H;
+        memory[address + 1] = registers.L;
+      } else {
+        console.warn(`Memory access out of bounds at address ${address}`);
+      }
+      break;
+    }
+    case "LHLD": {
+      const addressHex = instruction.operands[0].value;
+      const address = addressHex.replace("h", "");
+      if (memory.hasOwnProperty(address)) {
+        registers.H = memory[address];
+        registers.L = memory[address + 1];
+      } else {
+        console.warn(`Memory access out of bounds at address ${address}`);
+      }
+      break;
+    }
+
+    // JUMP AND CALL ARE PENDING
+
+    // INDIRECT ADDRESSING MODE INSTRUCTIONS
+    // ALL MOV handled above bruv
 
     default:
       console.warn(`Unhandled instruction mnemonic: ${instruction.mnemonic}`);

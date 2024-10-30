@@ -2,6 +2,7 @@ import { DirectModeInstructions } from "@/constants/DirectModeInstructions";
 import { ImmediateModeInstructions } from "@/constants/ImmediateModeInstructions";
 import { ImpliedModeInstructions } from "@/constants/ImpliedModeInstructions";
 import { IndirectModeInstructions } from "@/constants/IndirectModeInstructions";
+import { RegisterModeInstructions } from "@/constants/RegisterModeInstructions";
 import React, { createContext, useContext, useState } from "react";
 
 export interface Instruction {
@@ -22,6 +23,7 @@ export const InstructionProvider = ({
   const [instructions] = useState<Instruction[]>([
     ...ImmediateModeInstructions,
     ...DirectModeInstructions,
+    ...RegisterModeInstructions,
     ...IndirectModeInstructions,
     ...ImpliedModeInstructions,
   ]);

@@ -69,9 +69,9 @@ const InstructionDropdown = () => {
         <DropdownMenuContent className="h-96 overflow-y-scroll">
           <DropdownMenuLabel>Instructions</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {instructions.map((instruction: Instruction) => (
+          {instructions.map((instruction: Instruction, index: number) => (
             <DropdownMenuItem
-              key={instruction.opcode}
+              key={index}
               onClick={() => selectInstruction(instruction.mnemonic)}
             >
               {instruction.mnemonic}
