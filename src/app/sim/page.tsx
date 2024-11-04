@@ -1,6 +1,6 @@
 "use client";
 import InstructionDropdown from "@/components/InstructionDropdown";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Instruction, useInstructions } from "@/hooks/useInstruction";
 import { parseInstructions } from "@/parser/parseInstructions";
 import { useRegisters } from "@/contexts/RegisterContext";
@@ -36,47 +36,47 @@ export default function Sim() {
     gsap.fromTo(
       ".program",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".nextInst",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".memory",
       { opacity: 0, y: -1000 },
-      { opacity: 1, y: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, y: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".exec",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".currentInst",
       { opacity: 0, scale: 0.1 },
-      { opacity: 1, scale: 1, duration: 4, ease: "back.inOut" }
+      { opacity: 1, scale: 1, duration: 4, ease: "back.inOut" },
     );
     gsap.fromTo(
       ".register",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".flag",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".about",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
     );
     gsap.fromTo(
       ".tbl",
       { opacity: 0 },
-      { opacity: 1, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, duration: 3, ease: "power1.inOut" },
     );
   }, []);
 
@@ -104,7 +104,7 @@ export default function Sim() {
             operand,
           value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
         })),
-      })
+      }),
     );
 
     parseInstructions(
@@ -114,13 +114,13 @@ export default function Sim() {
       flags,
       setFlags,
       memory,
-      setMemory
+      setMemory,
     );
   };
 
   return (
     <div className="grid grid-cols-8 grid-rows-8 h-screen gap-5 px-5 py-5">
-      <div className="program col-span-4 flex flex-col row-span-4 relative border border-white/20 rounded-xl p-3">
+      <div className="program  md:col-span-4 flex flex-col row-span-4 relative border border-white/20 rounded-xl p-3">
         <div className="title text-3xl pb-3 text-yellow-100">Program</div>
         <hr className="mb-3" />
         <InstructionDropdown
@@ -139,12 +139,12 @@ export default function Sim() {
           handleAssemble={handleAssemble}
         />
       </div>
-      <button className="nextInst title col-span-2 col-start-1 row-start-5 border border-white/30 rounded-xl text-lg bg-white hover:bg-orange-600 hover:text-white text-black">
+      <button className="nextInst title col-span-2 col-start-1 row-start-5  rounded-xl text-lg bg-white hover:bg-orange-400 hover:text-black text-black">
         Next Instruction
       </button>
       <button
-        onClick={() => handleAssemble()}
-        className="exec title col-span-2 col-start-1 row-start-6 border border-white/30 rounded-xl text-lg hover:bg-yellow-500 bg-white hover:text-white text-black"
+        onClick={handleAssemble}
+        className="exec title col-span-2 col-start-1 row-start-6  rounded-xl text-lg hover:bg-yellow-300 bg-white hover:text-black text-black"
       >
         Execute All
       </button>
@@ -155,28 +155,10 @@ export default function Sim() {
           This is a section where we will show you the executing instructions
           and their details...
         </p>
-        <p>
-          This component is still missing because this text is written by the Ui
-          Dev and he doesnt know shit about backend...
-        </p>
       </div>
-      <div className="col-span-2 memory ustify-between flex flex-col  row-span-4 col-start-5 row-start-1 border border-white/30 rounded-xl p-3">
+      <div className="col-span-2 memory justify-around items-center flex flex-col row-span-4 col-start-5 row-start-1 border border-white/30 rounded-xl p-3 ">
         <h1 className="title text-3xl pb-3">Memory</h1>
-        <div className="overflow-y-scroll">
-          {/* <table className="tbl min-w-full border h-full  border-gray-300 text-white"> */}
-          {/* <thead>
-              <tr>
-                <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
-                  Name
-                </th>
-                <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
-                  Value
-                </th>
-              </tr>
-            </thead> */}
-          <MemoryTable memory={memory} />
-          {/* </table> */}
-        </div>
+        <MemoryTable memory={memory} />
       </div>
       <div className="register col-span-2 justify-between flex flex-col row-span-6 col-start-7 row-start-1 border border-white/30 rounded-xl p-3">
         <h1 className="title text-2xl pb-3 flex justify-between items-center">
@@ -257,14 +239,14 @@ export default function Sim() {
                     {7 - index === 7
                       ? "S"
                       : 7 - index === 6
-                      ? "Z"
-                      : 7 - index === 4
-                      ? "AC"
-                      : 7 - index === 2
-                      ? "P"
-                      : 7 - index === 0
-                      ? "C"
-                      : "X"}
+                        ? "Z"
+                        : 7 - index === 4
+                          ? "AC"
+                          : 7 - index === 2
+                            ? "P"
+                            : 7 - index === 0
+                              ? "C"
+                              : "X"}
                   </td>
                 ))}
               </tr>
@@ -317,56 +299,48 @@ export default function Sim() {
 
 const MemoryTable = ({ memory }: { memory: Memory }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredMemory, setFilteredMemory] = useState(memory);
 
-  useEffect(() => {
-    const filtered = Object.entries(memory).filter(([key]) =>
-      key.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMemory = useMemo(() => {
+    return Object.entries(memory).filter(([key]) =>
+      key.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-    setFilteredMemory(Object.fromEntries(filtered));
   }, [memory, searchTerm]);
 
   return (
-    <div>
-      <div className="mb-3">
-        <input
-          type="text"
-          placeholder="Search Memory..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-1 border border-gray-300 rounded"
+    <div className="flex flex-col w-full h-full">
+      <input
+        type="text"
+        placeholder="Search Memory..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full p-1 border border-gray-300 rounded mb-2"
+      />
+      <div className="overflow-y-auto overflow-x-hidden  w-full flex-grow">
+        <TableVirtuoso
+          width="100%"
+          style={{ width: "100%", overflowX: "hidden" }}
+          totalCount={filteredMemory.length}
+          fixedHeaderContent={() => (
+            <tr className="w-full relative z-10 scale-110 bg-black">
+              <th className="px-4 py-2 border border-white/30  bg-white/10 text-white font-semibold text-center">
+                Address
+              </th>
+              <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
+                Value
+              </th>
+            </tr>
+          )}
+          itemContent={(index) => {
+            const [memoryName, memoryValue] = filteredMemory[index];
+            return (
+              <>
+                <td className="px-4 py-2 w-2/3 text-center">{memoryName}</td>
+                <td className="px-4 py-2 w-full text-center">{memoryValue}</td>
+              </>
+            );
+          }}
         />
       </div>
-      <TableVirtuoso
-        style={{ height: "450px", width: "100%" }}
-        data={Object.entries(filteredMemory)}
-        fixedHeaderContent={() => (
-          <tr>
-            <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
-              Memory Name
-            </th>
-            <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
-              Memory Value
-            </th>
-          </tr>
-        )}
-        totalCount={Object.entries(filteredMemory).length}
-        itemContent={(index) => {
-          const [memoryName, memoryValue] =
-            Object.entries(filteredMemory)[index];
-          return (
-            <>
-              <td className="px-4 py-2 border border-white/30 text-center">
-                {memoryName}
-              </td>
-              <td className="px-4 py-2 border border-white/30 text-center">
-                {memoryValue}
-              </td>
-            </>
-          );
-        }}
-        height={5}
-      />
     </div>
   );
 };

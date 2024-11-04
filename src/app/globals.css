@@ -84,6 +84,9 @@ body {
 body {
   background-color: black;
 }
+tabel {
+  min-width: 100% !important;
+}
 
 input {
   background-color: var(--input);
