@@ -24,20 +24,20 @@ const RegisterContext = createContext<RegisterContextType | undefined>(
 
 export function RegisterProvider({ children }: { children: React.ReactNode }) {
   const [registers, setRegisters] = useState<Registers>(() => {
-    const savedRegisters = localStorage.getItem("registers");
-    return savedRegisters
-      ? JSON.parse(savedRegisters)
-      : {
-          A: "00",
-          B: "00",
-          C: "00",
-          D: "00",
-          E: "00",
-          H: "00",
-          L: "00",
-          SP: "00",
-          PC: "00",
-        };
+    // const savedRegisters = localStorage.getItem("registers");
+    // return savedRegisters
+    // ? JSON.parse(savedRegisters)
+    return {
+      A: "00",
+      B: "00",
+      C: "00",
+      D: "00",
+      E: "00",
+      H: "00",
+      L: "00",
+      SP: "00",
+      PC: "00",
+    };
   });
 
   useEffect(() => {

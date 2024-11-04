@@ -16,9 +16,7 @@ export default function RootLayout({
         <FlagRegisterProvider>
           <RegisterProvider>
             <InstructionProvider>
-              <body className={` antialiased dark overflow-hidden`}>
-                {children}
-              </body>
+              <body className={` antialiased dark `}>{children}</body>
             </InstructionProvider>
           </RegisterProvider>
         </FlagRegisterProvider>

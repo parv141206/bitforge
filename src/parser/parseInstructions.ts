@@ -45,7 +45,7 @@ export function parseInstructions(
   setFlags(newFlags);
 }
 
-function parseInstruction(
+export function parseInstruction(
   instruction: ParsedInstruction,
   registers: Registers,
   flags: Flags,

@@ -12,10 +12,13 @@ export const MemoryContext = createContext<{
 
 export function MemoryProvider({ children }: { children: React.ReactNode }) {
   const [memory, setMemory] = useState<Memory>(() => {
-    const savedMemory = localStorage.getItem("memory");
-    if (savedMemory) {
-      return JSON.parse(savedMemory);
-    }
+    // const savedMemory =
+    //   typeof localStorage !== "undefined"
+    //     ? localStorage?.getItem("memory")
+    //     : undefined;
+    // if (savedMemory) {
+    //   return JSON.parse(savedMemory);
+    // }
 
     const initialMemory: Memory = {};
     for (let i = 0; i < 65536; i++) {

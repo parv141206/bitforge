@@ -24,16 +24,16 @@ export function FlagRegisterProvider({
   children: React.ReactNode;
 }) {
   const [flags, setFlags] = useState<Flags>(() => {
-    const savedFlags = localStorage.getItem("flags");
-    return savedFlags
-      ? JSON.parse(savedFlags)
-      : {
-          Z: false,
-          P: false,
-          AC: false,
-          C: false,
-          S: false,
-        };
+    // const savedFlags = localStorage.getItem("flags");
+    // return savedFlags
+    // ? JSON.parse(savedFlags)
+    return {
+      Z: false,
+      P: false,
+      AC: false,
+      C: false,
+      S: false,
+    };
   });
 
   useEffect(() => {

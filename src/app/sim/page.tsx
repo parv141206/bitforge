@@ -2,7 +2,10 @@
 import InstructionDropdown from "@/components/InstructionDropdown";
 import React, { useEffect, useMemo, useState } from "react";
 import { Instruction, useInstructions } from "@/hooks/useInstruction";
-import { parseInstructions } from "@/parser/parseInstructions";
+import {
+  parseInstruction,
+  parseInstructions,
+} from "@/parser/parseInstructions";
 import { useRegisters } from "@/contexts/RegisterContext";
 import { useFlagRegisters } from "@/contexts/FlagRegisterContext";
 import { Memory, useMemory } from "@/contexts/MemoryContext";
@@ -11,6 +14,14 @@ import { SiZcool } from "react-icons/si";
 import gsap from "gsap";
 import { FixedSizeList } from "react-window";
 import { TableVirtuoso } from "react-virtuoso";
+import { GiProcessor } from "react-icons/gi";
+import { HiOutlineRectangleGroup } from "react-icons/hi2";
+import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 export default function Sim() {
   const {
     instructions,
@@ -20,7 +31,7 @@ export default function Sim() {
     deleteInstruction,
     operandsValues,
   } = useInstructions();
-
+  const [currentInstructionIndex, setCurrentInstructionIndex] = useState(0);
   const [filteredInstructions, setFilteredInstructions] =
     React.useState(instructions);
   const { registers, setRegisters } = useRegisters();
@@ -36,47 +47,47 @@ export default function Sim() {
     gsap.fromTo(
       ".program",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".nextInst",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".memory",
       { opacity: 0, y: -1000 },
-      { opacity: 1, y: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, y: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".exec",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".currentInst",
       { opacity: 0, scale: 0.1 },
-      { opacity: 1, scale: 1, duration: 4, ease: "back.inOut" },
+      { opacity: 1, scale: 1, duration: 4, ease: "back.inOut" }
     );
     gsap.fromTo(
       ".register",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".flag",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".about",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".tbl",
       { opacity: 0 },
-      { opacity: 1, duration: 3, ease: "power1.inOut" },
+      { opacity: 1, duration: 3, ease: "power1.inOut" }
     );
   }, []);
 
@@ -104,7 +115,7 @@ export default function Sim() {
             operand,
           value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
         })),
-      }),
+      })
     );
 
     parseInstructions(
@@ -114,14 +125,71 @@ export default function Sim() {
       flags,
       setFlags,
       memory,
-      setMemory,
+      setMemory
     );
+  };
+  const nextInstruction = () => {
+    let newRegisters = { ...registers };
+    let newFlags = { ...flags };
+    const parsedData = selectedInstructions.map(
+      ({ instruction }: { instruction: Instruction }) => ({
+        mnemonic: instruction.mnemonic,
+        operands: instruction.operands.map((operand) => ({
+          name:
+            operandsValues[instruction.mnemonic]?.[operand]?.expectedName ||
+            operand,
+          value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
+        })),
+      })
+    );
+    const result = parseInstruction(
+      parsedData[currentInstructionIndex],
+      registers,
+      flags,
+      memory
+    );
+    newRegisters = result.registers;
+    newFlags = result.flags;
+
+    if (result.memory) {
+      setMemory(result.memory);
+    }
+    setCurrentInstructionIndex((prevIndex) => prevIndex + 1);
+    setRegisters(newRegisters);
+    setFlags(newFlags);
   };
 
   return (
     <div className="grid grid-cols-8 grid-rows-8 h-screen gap-5 px-5 py-5">
       <div className="program  md:col-span-4 flex flex-col row-span-4 relative border border-white/20 rounded-xl p-3">
-        <div className="title text-3xl pb-3 text-yellow-100">Program</div>
+        <div className="title text-3xl w-full flex justify-between items-center  pb-3 text-yellow-100">
+          <div>Program</div>
+          <div className="flex gap-3">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  {" "}
+                  <button className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700">
+                    <GiProcessor />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Pin Diagram</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <button className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700">
+                    <HiOutlineRectangleGroup />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Architecture of 8085</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
         <hr className="mb-3" />
         <InstructionDropdown
           instructions={instructions}
@@ -139,7 +207,14 @@ export default function Sim() {
           handleAssemble={handleAssemble}
         />
       </div>
-      <button className="nextInst title col-span-2 col-start-1 row-start-5  rounded-xl text-lg bg-white hover:bg-orange-400 hover:text-black text-black">
+      <button
+        disabled={
+          currentInstructionIndex === selectedInstructions.length ||
+          selectedInstructions.length === 0
+        }
+        onClick={nextInstruction}
+        className="nextInst title disabled:bg-slate-300 col-span-2 col-start-1 row-start-5  rounded-xl text-lg bg-white hover:bg-orange-400 hover:text-black text-black"
+      >
         Next Instruction
       </button>
       <button
@@ -239,14 +314,14 @@ export default function Sim() {
                     {7 - index === 7
                       ? "S"
                       : 7 - index === 6
-                        ? "Z"
-                        : 7 - index === 4
-                          ? "AC"
-                          : 7 - index === 2
-                            ? "P"
-                            : 7 - index === 0
-                              ? "C"
-                              : "X"}
+                      ? "Z"
+                      : 7 - index === 4
+                      ? "AC"
+                      : 7 - index === 2
+                      ? "P"
+                      : 7 - index === 0
+                      ? "C"
+                      : "X"}
                   </td>
                 ))}
               </tr>
@@ -302,7 +377,7 @@ const MemoryTable = ({ memory }: { memory: Memory }) => {
 
   const filteredMemory = useMemo(() => {
     return Object.entries(memory).filter(([key]) =>
-      key.toLowerCase().includes(searchTerm.toLowerCase()),
+      key.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [memory, searchTerm]);
 
