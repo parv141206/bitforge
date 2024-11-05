@@ -22,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
 export default function Sim() {
   const {
     instructions,
@@ -169,9 +170,12 @@ export default function Sim() {
               <Tooltip>
                 <TooltipTrigger>
                   {" "}
-                  <button className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700">
+                  <Link
+                    href={"/pin-diagram"}
+                    className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700"
+                  >
                     <GiProcessor />
-                  </button>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Pin Diagram</p>
@@ -179,9 +183,9 @@ export default function Sim() {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger>
-                  <button className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700">
+                  <div className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700">
                     <HiOutlineRectangleGroup />
-                  </button>
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Architecture of 8085</p>
