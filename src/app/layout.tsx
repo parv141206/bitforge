@@ -3,6 +3,7 @@ import { InstructionProvider } from "@/hooks/useInstruction";
 import "./globals.css";
 import { MemoryProvider } from "@/contexts/MemoryContext";
 import { RegisterProvider } from "@/contexts/RegisterContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { FlagRegisterProvider } from "@/contexts/FlagRegisterContext";
 
 export default function RootLayout({
@@ -16,7 +17,9 @@ export default function RootLayout({
         <FlagRegisterProvider>
           <RegisterProvider>
             <InstructionProvider>
-              <body className={` antialiased dark `}>{children}</body>
+              <ThemeProvider>
+                <body >{children}</body>
+              </ThemeProvider>
             </InstructionProvider>
           </RegisterProvider>
         </FlagRegisterProvider>

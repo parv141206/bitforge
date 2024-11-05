@@ -74,9 +74,10 @@ export const InstructionProvider = ({
   };
 
   const deleteInstruction = (sequenceNumber: number) => {
-    sequenceNumber++;
+    console.log(sequenceNumber + 1, selectedInstructions);
+    // sequenceNumber++;
     setSelectedInstructions((prev) =>
-      prev.filter((inst) => inst.sequenceNumber !== sequenceNumber)
+      prev.filter((inst) => inst.sequenceNumber !== sequenceNumber + 1)
     );
   };
 

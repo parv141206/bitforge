@@ -60,7 +60,7 @@ const InstructionDropdown = ({
   return (
     <div className="">
       <DropdownMenu>
-        <DropdownMenuTrigger className="px-4 py-2 text-sm bg-black border border-white/15 rounded hover:bg-white hover:text-black">
+        <DropdownMenuTrigger className="px-4 bg-stone-100 border-stone-400 py-2 text-sm dark:bg-black border dark:border-white/15 rounded dark:hover:bg-white dark:hover:text-black">
           Add Instruction
         </DropdownMenuTrigger>
         <DropdownMenuContent className="h-80 overflow-y-scroll">
@@ -102,7 +102,7 @@ const InstructionDropdown = ({
                 key={`${instruction.mnemonic}-${index}`}
                 className="flex gap-3 items-center justify-start"
               >
-                <div className="border-s-2 border-blue-300 px-3">
+                <div className="border-s-2 dark:border-blue-300 border-stone-400 px-3">
                   {" "}
                   {index + 1}
                 </div>
@@ -128,7 +128,7 @@ const InstructionDropdown = ({
                           " (Hex)"
                         }
                         type="text"
-                        className="border w-32 border-gray-300 rounded px-2 py-1 text-white"
+                        className="border w-32 border-gray-300 rounded px-2 py-1 dark:text-white text-black"
                         onChange={(e) =>
                           updateOperandValue(
                             instruction.mnemonic,
@@ -140,12 +140,16 @@ const InstructionDropdown = ({
                     </li>
                   ))}
                 </ul>
-                <button
-                  onClick={() => deleteInstruction(index)}
-                  className="text-red-500 text-xl hover:text-red-700"
-                >
-                  <TiDelete />
-                </button>
+                {index === selectedInstructions.length - 1 ? (
+                  <button
+                    onClick={() => deleteInstruction(index)}
+                    className="text-red-500 text-xl hover:text-red-700"
+                  >
+                    <TiDelete />
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             )
           )}

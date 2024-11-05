@@ -1,6 +1,6 @@
 "use client";
 import InstructionDropdown from "@/components/InstructionDropdown";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Instruction, useInstructions } from "@/hooks/useInstruction";
 import {
   parseInstruction,
@@ -16,6 +16,8 @@ import { FixedSizeList } from "react-window";
 import { TableVirtuoso } from "react-virtuoso";
 import { GiProcessor } from "react-icons/gi";
 import { HiOutlineRectangleGroup } from "react-icons/hi2";
+import { MdDarkMode } from "react-icons/md";
+import { MdLightMode } from "react-icons/md";
 import {
   TooltipContent,
   Tooltip,
@@ -23,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { ThemeContext, useTheme } from "@/contexts/ThemeContext";
 export default function Sim() {
   const {
     instructions,
@@ -38,7 +41,7 @@ export default function Sim() {
   const { registers, setRegisters } = useRegisters();
   const { flags, setFlags } = useFlagRegisters();
   const { memory, setMemory } = useMemory();
-
+  const { theme, toggleTheme } = useTheme();
   useEffect(() => {
     console.log("Selected Instructions:", selectedInstructions);
   }, [selectedInstructions]);
@@ -161,215 +164,232 @@ export default function Sim() {
   };
 
   return (
-    <div className="grid grid-cols-8 grid-rows-8 h-screen gap-5 px-5 py-5">
-      <div className="program  md:col-span-4 flex flex-col row-span-4 relative border border-white/20 rounded-xl p-3">
-        <div className="title text-3xl w-full flex justify-between items-center  pb-3 text-yellow-100">
-          <div>Program</div>
-          <div className="flex gap-3">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  {" "}
-                  <Link
-                    href={"/pin-diagram"}
-                    className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700"
-                  >
-                    <GiProcessor />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Pin Diagram</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger>
-                  <div className="bg-stone-900 rounded-2xl p-3 hover:bg-stone-700">
-                    <HiOutlineRectangleGroup />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Architecture of 8085</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+    <div className={`${theme}`}>
+      <div
+        className={`grid grid-cols-8  grid-rows-8 h-screen gap-5 bg-white dark:bg-black dark:text-white px-5 py-5`}
+      >
+        <div className="program  md:col-span-4 flex flex-col row-span-4 relative border border-stone-300  dark:border-white/20 rounded-xl p-3">
+          <div className="title text-slate-800 text-3xl w-full flex justify-between items-center  pb-3 dark:text-yellow-100">
+            <div>Program</div>
+            <div className="flex gap-3">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div
+                      onClick={toggleTheme}
+                      className="dark:bg-stone-900 bg-stone-300 rounded-2xl p-3 hover:bg-stone-200  dark:hover:bg-stone-700"
+                    >
+                      {theme === "light" ? <MdDarkMode /> : <MdLightMode />}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Change theme</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Link href={"/pin-diagram"}>
+                      <div className="dark:bg-stone-900 bg-stone-300 hover:bg-stone-200  rounded-2xl p-3 hover:dark:bg-stone-700">
+                        <GiProcessor />
+                      </div>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Pin Diagram</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="dark:bg-stone-900 bg-stone-300 hover:bg-stone-200  rounded-2xl p-3 dark:hover:bg-stone-700">
+                      <HiOutlineRectangleGroup />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Architecture of 8085</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+          <hr className="mb-3" />
+          <InstructionDropdown
+            instructions={instructions}
+            selectedInstructions={selectedInstructions}
+            selectInstruction={selectInstruction}
+            updateOperandValue={updateOperandValue}
+            deleteInstruction={deleteInstruction}
+            operandsValues={operandsValues}
+            registers={registers}
+            setRegisters={setRegisters}
+            flags={flags}
+            setFlags={setFlags}
+            memory={memory}
+            setMemory={setMemory}
+            handleAssemble={handleAssemble}
+          />
+        </div>
+        <button
+          disabled={
+            currentInstructionIndex === selectedInstructions.length ||
+            selectedInstructions.length === 0
+          }
+          onClick={nextInstruction}
+          className="nextInst title disabled:bg-yellow-100 col-span-2 col-start-1 row-start-5  rounded-xl text-lg dark:bg-white bg-yellow-300  hover:bg-orange-400 dark:hover:text-black text-black "
+        >
+          Next Instruction
+        </button>
+        <button
+          onClick={handleAssemble}
+          className="exec title col-span-2 col-start-1 row-start-6  rounded-xl text-lg bg-orange-300  hover:bg-orange-200  dark:hover:bg-yellow-300 dark:bg-white dark:hover:text-black text-black"
+        >
+          Execute All
+        </button>
+        <div className="currentInst col-span-4 row-span-2 col-start-3 row-start-5 border border-stone-300 dark:border-white/30 rounded-xl p-3">
+          <h1 className="title text-3xl pb-3">Current Instruction</h1>
+          <hr className="mb-3" />
+          <p>
+            {currentInstructionIndex < selectedInstructions.length
+              ? selectedInstructions[currentInstructionIndex].instruction
+                  .mnemonic
+              : "No instruction selected"}
+          </p>
+        </div>
+        <div className="col-span-2 memory justify-around items-center flex flex-col row-span-4 col-start-5 row-start-1 border border-stone-300 dark:border-white/30 rounded-xl p-3 ">
+          <h1 className="title text-3xl pb-3">Memory</h1>
+          <MemoryTable memory={memory} />
+        </div>
+        <div className="register col-span-2 justify-between flex flex-col row-span-6 col-start-7 row-start-1 border border-stone-300 dark:border-white/30 rounded-xl p-3">
+          <h1 className="title text-2xl pb-3 flex justify-between items-center">
+            <div>Registers</div>
+            <button
+              onClick={() => {
+                resetRegisters();
+              }}
+            >
+              Reset
+            </button>
+          </h1>
+          <div className="overflow-x-auto h-full">
+            <table className="tbl min-w-full border h-full dark:border-gray-300 border-stone-300 text-white">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 border dark:border-white/30 text-black dark:bg-white/10 dark:text-white font-semibold text-center">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 border text-black dark:border-white/30 dark:bg-white/10 dark:text-white font-semibold text-center">
+                    Value
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(registers)
+                  .slice(0, -2)
+                  .map(([registerName, registerValue], index) => (
+                    <tr
+                      key={index}
+                      className={`${index === 0 ? "bg-slate-400/20" : ""} ${
+                        index === 1 || index === 2 ? "bg-slate-400/15" : ""
+                      } ${
+                        index === 3 || index === 4 ? "bg-slate-400/10" : ""
+                      } ${index === 5 || index === 6 ? "bg-slate-400/5" : ""}`}
+                    >
+                      <td className="px-4 py-2 border dark:border-white/30 text-black dark:text-white text-center">
+                        {registerName}
+                      </td>
+                      <td className="px-4 py-2 border dark:border-white/30 text-black dark:text-white text-center">
+                        {registerValue}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
         </div>
-        <hr className="mb-3" />
-        <InstructionDropdown
-          instructions={instructions}
-          selectedInstructions={selectedInstructions}
-          selectInstruction={selectInstruction}
-          updateOperandValue={updateOperandValue}
-          deleteInstruction={deleteInstruction}
-          operandsValues={operandsValues}
-          registers={registers}
-          setRegisters={setRegisters}
-          flags={flags}
-          setFlags={setFlags}
-          memory={memory}
-          setMemory={setMemory}
-          handleAssemble={handleAssemble}
-        />
-      </div>
-      <button
-        disabled={
-          currentInstructionIndex === selectedInstructions.length ||
-          selectedInstructions.length === 0
-        }
-        onClick={nextInstruction}
-        className="nextInst title disabled:bg-slate-300 col-span-2 col-start-1 row-start-5  rounded-xl text-lg bg-white hover:bg-orange-400 hover:text-black text-black"
-      >
-        Next Instruction
-      </button>
-      <button
-        onClick={handleAssemble}
-        className="exec title col-span-2 col-start-1 row-start-6  rounded-xl text-lg hover:bg-yellow-300 bg-white hover:text-black text-black"
-      >
-        Execute All
-      </button>
-      <div className="currentInst col-span-4 row-span-2 col-start-3 row-start-5 border border-white/30 rounded-xl p-3">
-        <h1 className="title text-3xl pb-3">Current Instruction</h1>
-        <hr className="mb-3" />
-        <p>
-          This is a section where we will show you the executing instructions
-          and their details...
-        </p>
-      </div>
-      <div className="col-span-2 memory justify-around items-center flex flex-col row-span-4 col-start-5 row-start-1 border border-white/30 rounded-xl p-3 ">
-        <h1 className="title text-3xl pb-3">Memory</h1>
-        <MemoryTable memory={memory} />
-      </div>
-      <div className="register col-span-2 justify-between flex flex-col row-span-6 col-start-7 row-start-1 border border-white/30 rounded-xl p-3">
-        <h1 className="title text-2xl pb-3 flex justify-between items-center">
-          <div>Registers</div>
-          <button
-            onClick={() => {
-              resetRegisters();
-            }}
+        <div className="flag col-span-5 row-span-2 items-center row-start-7 border border-stone-300 dark:border-white/30 rounded-xl p-3 flex justify-stretch  ">
+          <h1
+            className="title text-2xl px-2 py-3 text-center rotate-180"
+            style={{ writingMode: "vertical-rl" }}
           >
-            Reset
-          </button>
-        </h1>
-        <div className="overflow-x-auto h-full">
-          <table className="tbl min-w-full border h-full border-gray-300 text-white">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
-                  Name
-                </th>
-                <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
-                  Value
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(registers)
-                .slice(0, -2)
-                .map(([registerName, registerValue], index) => (
-                  <tr
-                    key={index}
-                    className={`${index === 0 ? "bg-slate-400/20" : ""} ${
-                      index === 1 || index === 2 ? "bg-slate-400/15" : ""
-                    } ${index === 3 || index === 4 ? "bg-slate-400/10" : ""} ${
-                      index === 5 || index === 6 ? "bg-slate-400/5" : ""
-                    }`}
-                  >
-                    <td className="px-4 py-2 border border-white/30 text-center">
-                      {registerName}
+            Flag Register
+          </h1>
+          <div className="w-full">
+            <table
+              className="tbl min-w-full border border-white/30 dark:text-white text-black"
+              style={{ borderRadius: "2rem" }}
+            >
+              <thead>
+                <tr>
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <th
+                      key={index}
+                      className="px-4 py-2 border dark:border-white/30 dark:bg-slate-100/10 dark:text-white text-black border-stone-300 bg-emerald-100 text-center"
+                    >
+                      D{7 - index}
+                    </th>
+                  ))}
+                </tr>
+                <tr>
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <td
+                      key={index}
+                      className="px-2 py-1 border dark:border-white/30 dark:bg-slate-100/5 dark:text-white text-black border-stone-300 bg-emerald-50 text-center"
+                    >
+                      {7 - index === 7
+                        ? "S"
+                        : 7 - index === 6
+                        ? "Z"
+                        : 7 - index === 4
+                        ? "AC"
+                        : 7 - index === 2
+                        ? "P"
+                        : 7 - index === 0
+                        ? "C"
+                        : "X"}
                     </td>
-                    <td className="px-4 py-2 border border-white/30 text-center">
-                      {registerValue}
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {Array.from([
+                    flags.S ? "1" : "0",
+                    flags.Z ? "1" : "0",
+                    "X",
+                    flags.AC ? "1" : "0",
+                    "X",
+                    flags.P ? "1" : "0",
+                    "X",
+                    flags.C ? "1" : "0",
+                  ]).map((value, index) => (
+                    <td
+                      key={index}
+                      className="px-2 py-1 border dark:border-white/30 border-slate-300 text-center "
+                    >
+                      {value}
                     </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-      <div className="flag col-span-5 row-span-2 items-center row-start-7 border border-white/30 rounded-xl p-3 flex justify-stretch  ">
-        <h1
-          className="title text-2xl px-2 py-3 text-center rotate-180"
-          style={{ writingMode: "vertical-rl" }}
-        >
-          Flag Register
-        </h1>
-        <div className="w-full">
-          <table
-            className="tbl min-w-full border border-white/30 text-white"
-            style={{ borderRadius: "2rem" }}
+        <div className="about col-span-3 flex flex-row row-span-2 col-start-6 row-start-7 border dark:border-white/30 dark:bg-white/5 bg-stone-100 rounded-xl p-3 gap-3 items-center">
+          <h1
+            className="title text-2xl text-center pb-3 rotate-180"
+            style={{ writingMode: "vertical-rl" }}
           >
-            <thead>
-              <tr>
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <th
-                    key={index}
-                    className="px-4 py-2 border border-white/30 bg-slate-100/10 text-white text-center"
-                  >
-                    D{7 - index}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <td
-                    key={index}
-                    className="px-2 py-1 border border-white/30 bg-slate-100/5 text-white text-center"
-                  >
-                    {7 - index === 7
-                      ? "S"
-                      : 7 - index === 6
-                      ? "Z"
-                      : 7 - index === 4
-                      ? "AC"
-                      : 7 - index === 2
-                      ? "P"
-                      : 7 - index === 0
-                      ? "C"
-                      : "X"}
-                  </td>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {Array.from([
-                  flags.S ? "1" : "0",
-                  flags.Z ? "1" : "0",
-                  "X",
-                  flags.AC ? "1" : "0",
-                  "X",
-                  flags.P ? "1" : "0",
-                  "X",
-                  flags.C ? "1" : "0",
-                ]).map((value, index) => (
-                  <td
-                    key={index}
-                    className="px-2 py-1 border border-white/30 text-center "
-                  >
-                    {value}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div className="about col-span-3 flex flex-row row-span-2 col-start-6 row-start-7 border border-white/30 bg-white/5 rounded-xl p-3 gap-3 items-center">
-        <h1
-          className="title text-2xl text-center pb-3 rotate-180"
-          style={{ writingMode: "vertical-rl" }}
-        >
-          About Us
-        </h1>
-        <hr className="mb-3" />
-        <div className="flex flex-col">
-          <p>Made with ♥ by 2 students of VPMP</p>
-          <p className="flex items-center gap-3">
-            <SiZcool className="text-xl" /> Parv Shah CE2 22/99
-          </p>
-          <p className="flex items-center gap-3">
-            <SiZcool className="text-xl" /> Rudra Mehta CE2 22/174
-          </p>
+            About Us
+          </h1>
+          <hr className="mb-3" />
+          <div className="flex flex-col">
+            <p>Made with ♥ by 2 students of VPMP</p>
+            <p className="flex items-center gap-3">
+              <SiZcool className="text-xl" /> Parv Shah CE2 22/99
+            </p>
+            <p className="flex items-center gap-3">
+              <SiZcool className="text-xl" /> Rudra Mehta CE2 22/174
+            </p>
+          </div>
         </div>
       </div>
     </div>
