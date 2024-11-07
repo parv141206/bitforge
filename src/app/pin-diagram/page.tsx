@@ -7,12 +7,17 @@ import {
 } from "@/components/ui/hover-card";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+import { useTheme } from "@/contexts/ThemeContext";
 export default function PinDiagram() {
   const numPins = 20;
   const pinDescription = "8085 Microprocessor";
-
+  const { theme } = useTheme();
   return (
-    <div className="container mx-auto flex items-center min-h-[150vh] flex-col justify-center px-12  gap-5">
+    <div
+      className={`container mx-auto ${
+        theme === "dark" ? "dark bg-black text-white" : "bg-white text-black"
+      }   flex items-center min-h-[200vh] flex-col justify-center px-12  gap-5`}
+    >
       <Link href={"/sim"} className="text-3xl flex gap-3 text-start w-full">
         <FaArrowLeft />
         <div>Sim</div>
@@ -101,7 +106,7 @@ function PinFunctions({ pinNumber }: { pinNumber: number }) {
     case 2:
       return (
         <PinFunction
-          className="hover:text-green-500 group group:"
+          className="hover:text-green-500  group group:"
           pin={pinNumber === 1 ? "X1" : "X2"}
           description="X1 and X2 are pins which are connected to clock which supplies it with constant pules to manage the frequency of the microprocessor."
         />
@@ -363,7 +368,9 @@ function PinFunction({
 
 const IOStatusTable = () => {
   return (
-    <table className="min-w-full border-collapse my-1 border border-gray-300">
+    <table
+      className={` min-w-full border-collapse my-1 border border-gray-300`}
+    >
       <thead>
         <tr>
           <th className="border border-gray-300 px-4 py-2">IO/M'</th>

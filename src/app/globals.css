@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 body {
-  font-family: aptos, cursive;
+  font-family: aptos, sans-serif;
 }
 .title {
-  font-family: futura, cursive;
+  font-family: futura, arial;
 }
 @font-face {
   font-family: "aptos";
