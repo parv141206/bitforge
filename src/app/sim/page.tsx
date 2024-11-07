@@ -51,47 +51,47 @@ export default function Sim() {
     gsap.fromTo(
       ".program",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".nextInst",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 2, delay: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".memory",
       { opacity: 0, y: -1000 },
-      { opacity: 1, y: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, y: 0, duration: 2, delay: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".exec",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".currentInst",
       { opacity: 0, scale: 0.1 },
-      { opacity: 1, scale: 1, duration: 4, ease: "back.inOut" }
+      { opacity: 1, scale: 1, delay: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".register",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".flag",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".about",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" }
     );
     gsap.fromTo(
       ".tbl",
       { opacity: 0 },
-      { opacity: 1, duration: 3, ease: "power1.inOut" }
+      { opacity: 1, duration: 1, ease: "power1.inOut" }
     );
   }, []);
 
@@ -200,12 +200,14 @@ export default function Sim() {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger>
-                    <div className="dark:bg-stone-900 bg-stone-300 hover:bg-stone-200  rounded-2xl p-3 dark:hover:bg-stone-700">
-                      <HiOutlineRectangleGroup />
-                    </div>
+                    <Link href={"/arch"}>
+                      <div className="dark:bg-stone-900 bg-stone-300 hover:bg-stone-200  rounded-2xl p-3 dark:hover:bg-stone-700">
+                        <HiOutlineRectangleGroup />
+                      </div>
+                    </Link>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Architecture of 8085</p>
+                    <p>Architecture</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -254,7 +256,7 @@ export default function Sim() {
               : "No instruction selected"}
           </p>
         </div>
-        <div className="col-span-2 memory justify-around items-center flex flex-col row-span-4 col-start-5 row-start-1 border border-stone-300 dark:border-white/30 rounded-xl p-3 ">
+        <div className="col-span-2 memory flex flex-col row-span-4 col-start-5 row-start-1 border border-stone-300 dark:border-white/30 rounded-xl p-3 ">
           <h1 className="title text-3xl pb-3">Memory</h1>
           <MemoryTable memory={memory} />
         </div>

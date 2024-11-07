@@ -16,15 +16,17 @@ export default function PinDiagram() {
     <div
       className={`container mx-auto ${
         theme === "dark" ? "dark bg-black text-white" : "bg-white text-black"
-      }   flex items-center min-h-[200vh] flex-col justify-center px-12  gap-5`}
+      }   flex items-center min-h-[screen] flex-col justify-center px-12 gap-5 mt-20`}
     >
       <Link href={"/sim"} className="text-3xl flex gap-3 text-start w-full">
-        <FaArrowLeft />
-        <div>Sim</div>
+        <FaArrowLeft className="mt-1" />
+        <div className="title">Back to Sim</div>
       </Link>
-      <div className="text-xl text-start w-full">
-        Following is the pin diagram of 8085. To study the function of each pin,
-        just hover your mouse over any pin name...
+      <div className="body text-xl text-start w-full">
+        Here is the pin diagram for the 8085 microprocessor. To learn about the
+        function of each pin, hover over the pin names displayed in the diagram.
+        Each pin serves a unique purpose that contributes to the operational
+        capabilities of the microprocessor.
       </div>
       <div className="grid grid-cols-5 grid-rows-20 gap-4 border-2 w-[70%] border-black rounded-lg p-4">
         {/* First Column: Pins 1 to 20 */}
