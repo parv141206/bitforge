@@ -1,5 +1,5 @@
 "use client";
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useEffect } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -7,28 +7,63 @@ import {
 } from "@/components/ui/hover-card";
 import { FaArrowLeft } from "react-icons/fa";
 import Link from "next/link";
+import { gsap } from "gsap";
 import { useTheme } from "@/contexts/ThemeContext";
 export default function PinDiagram() {
   const numPins = 20;
   const pinDescription = "8085 Microprocessor";
   const { theme } = useTheme();
+
+  useEffect(() => {
+    // Animate the title and body text
+    gsap.fromTo(
+      ".title",
+      { opacity: 0, y: -50 },
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+    );
+
+    gsap.fromTo(
+      ".icon",
+      { opacity: 0, y: -150 },
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+    );
+
+    gsap.fromTo(
+      ".body",
+      { opacity: 0, y: 100 },
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+    );
+
+    gsap.fromTo(
+      ".f1",
+      { opacity: 0 },
+      { opacity: 1, duration: 1, delay: 2, ease: "power2.out" }
+    );
+  }, []);
+
   return (
     <div
       className={`container mx-auto ${
         theme === "dark" ? "dark bg-black text-white" : "bg-white text-black"
       }   flex items-center min-h-[screen] flex-col justify-center px-12 gap-5 mt-20`}
     >
-      <Link href={"/sim"} className="text-3xl flex gap-3 text-start w-full">
+      <Link
+        href={"/sim"}
+        className="icon text-3xl flex gap-3 text-start w-full"
+      >
         <FaArrowLeft className="mt-1" />
         <div className="title">Back to Sim</div>
       </Link>
       <div className="body text-xl text-start w-full">
         Here is the pin diagram for the 8085 microprocessor. To learn about the
         function of each pin, hover over the pin names displayed in the diagram.
-        Each pin serves a unique purpose that contributes to the operational
-        capabilities of the microprocessor.
+        Each pin serves a unique purpose that contributes to the operational The
+        pin diagram is a useful tool for understanding how the microprocessor
+        works and how it can be used in a variety of applications. It provides a
+        visual representation of the physical connections between the pins and
+        the internal capabilities of the microprocessor.
       </div>
-      <div className="grid grid-cols-5 grid-rows-20 gap-4 border-2 w-[70%] border-black rounded-lg p-4">
+      <div className="f1 grid grid-cols-5 grid-rows-20 gap-4 border-2 w-[70%] border-black rounded-lg p-4">
         {/* First Column: Pins 1 to 20 */}
         {Array.from({ length: numPins }, (_, i) => (
           <div

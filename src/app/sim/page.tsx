@@ -48,53 +48,73 @@ export default function Sim() {
 
   // GSAP ANIMATIONS
   useEffect(() => {
-    gsap.fromTo(
+    // Create a new timeline
+    let tl = gsap.timeline();
+
+    // Animate 'program'
+    tl.fromTo(
       ".program",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" } // Reduced duration
     );
-    gsap.fromTo(
-      ".nextInst",
-      { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 2, delay: 2, ease: "power1.inOut" }
-    );
-    gsap.fromTo(
+
+    // Animate 'memory' and 'registers' after 'program'
+    tl.fromTo(
       ".memory",
       { opacity: 0, y: -1000 },
-      { opacity: 1, y: 0, duration: 2, delay: 2, ease: "power1.inOut" }
+      { opacity: 1, y: 0, duration: 1.5, ease: "power1.inOut" },
+      "<" // Start at the same time as 'program'
     );
-    gsap.fromTo(
-      ".exec",
-      { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
-    );
-    gsap.fromTo(
-      ".currentInst",
-      { opacity: 0, scale: 0.1 },
-      { opacity: 1, scale: 1, delay: 2, ease: "power1.inOut" }
-    );
-    gsap.fromTo(
+
+    tl.fromTo(
       ".register",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
+      "<" // Start at the same time as 'memory'
     );
-    gsap.fromTo(
+
+    // Animate 'nextInst' and 'exec' simultaneously after 'program'
+    tl.fromTo(
+      ".nextInst",
+      { opacity: 0, x: -1000 },
+      { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
+      "<" // Start after 'program' (no delay)
+    );
+
+    tl.fromTo(
+      ".exec",
+      { opacity: 0, x: -1000 },
+      { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
+      "<" // Start after 'program' (no delay)
+    );
+
+    // Animate 'currentInst' after all previous elements
+    tl.fromTo(
+      ".currentInst",
+      { opacity: 0, scale: 0.1 },
+      { opacity: 1, scale: 1, duration: 1.5, ease: "power1.inOut" },
+      "<" // Start after 'nextInst' and 'exec'
+    );
+
+    // Animate 'flag', 'about', and 'tbl' in sequence
+    tl.fromTo(
       ".flag",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 2, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" }
     );
-    gsap.fromTo(
+
+    tl.fromTo(
       ".about",
       { opacity: 0, x: 1000 },
       { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" }
     );
-    gsap.fromTo(
+
+    tl.fromTo(
       ".tbl",
       { opacity: 0 },
-      { opacity: 1, duration: 1, ease: "power1.inOut" }
+      { opacity: 1, duration: 1.5, ease: "power1.inOut" }
     );
   }, []);
-
   const resetRegisters = () => {
     localStorage.removeItem("registers");
     setRegisters({
@@ -166,18 +186,18 @@ export default function Sim() {
   return (
     <div className={`${theme}`}>
       <div
-        className={`grid grid-cols-8  grid-rows-8 h-screen gap-5 bg-white dark:bg-black dark:text-white px-5 py-5`}
+        className={`grid grid-cols-8  grid-rows-8 h-screen gap-5 bg-stone-100 dark:bg-black dark:text-white px-5 py-5`}
       >
-        <div className="program  md:col-span-4 flex flex-col row-span-4 relative border border-stone-300  dark:border-white/20 rounded-xl p-3">
-          <div className="title text-slate-800 text-3xl w-full flex justify-between items-center  pb-3 dark:text-yellow-100">
-            <div>Program</div>
+        <div className="program md:col-span-4 flex flex-col row-span-4 relative border border-stone-300  dark:border-white/20 rounded-xl p-3">
+          <div className="text-slate-800 text-3xl w-full flex justify-between items-center  pb-3 dark:text-white">
+            <div className="title dark:text-yellow-100">Program</div>
             <div className="flex gap-3">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <div
                       onClick={toggleTheme}
-                      className="dark:bg-stone-900 bg-stone-300 rounded-2xl p-3 hover:bg-stone-200  dark:hover:bg-stone-700"
+                      className="dark:bg-black rounded-xl p-2 hover:bg-stone-200 dark:hover:bg-stone-700"
                     >
                       {theme === "light" ? <MdDarkMode /> : <MdLightMode />}
                     </div>
@@ -189,7 +209,7 @@ export default function Sim() {
                 <Tooltip>
                   <TooltipTrigger>
                     <Link href={"/pin-diagram"}>
-                      <div className="dark:bg-stone-900 bg-stone-300 hover:bg-stone-200  rounded-2xl p-3 hover:dark:bg-stone-700">
+                      <div className="dark:bg-black hover:bg-stone-200 rounded-xl p-2 hover:dark:bg-stone-700">
                         <GiProcessor />
                       </div>
                     </Link>
@@ -201,7 +221,7 @@ export default function Sim() {
                 <Tooltip>
                   <TooltipTrigger>
                     <Link href={"/arch"}>
-                      <div className="dark:bg-stone-900 bg-stone-300 hover:bg-stone-200  rounded-2xl p-3 dark:hover:bg-stone-700">
+                      <div className="dark:bg-black hover:bg-stone-200 rounded-xl p-2 dark:hover:bg-stone-700">
                         <HiOutlineRectangleGroup />
                       </div>
                     </Link>
@@ -236,13 +256,13 @@ export default function Sim() {
             selectedInstructions.length === 0
           }
           onClick={nextInstruction}
-          className="nextInst title disabled:bg-yellow-100 col-span-2 col-start-1 row-start-5  rounded-xl text-lg dark:bg-white bg-yellow-300  hover:bg-orange-400 dark:hover:text-black text-black "
+          className="nextInst title disabled:bg-yellow-300 disabled:text-black col-span-2 col-start-1 row-start-5  rounded-xl text-lg dark:bg-white bg-yellow-300  hover:bg-black hover:text-white dark:hover:bg-orange-400 text-black"
         >
           Next Instruction
         </button>
         <button
           onClick={handleAssemble}
-          className="exec title col-span-2 col-start-1 row-start-6  rounded-xl text-lg bg-orange-300  hover:bg-orange-200  dark:hover:bg-yellow-300 dark:bg-white dark:hover:text-black text-black"
+          className="exec title col-span-2 col-start-1 row-start-6  rounded-xl text-lg bg-orange-300 hover:bg-black hover:text-white  dark:hover:bg-yellow-300 dark:bg-white dark:hover:text-black text-black"
         >
           Execute All
         </button>
@@ -422,11 +442,11 @@ const MemoryTable = ({ memory }: { memory: Memory }) => {
           style={{ width: "100%", overflowX: "hidden" }}
           totalCount={filteredMemory.length}
           fixedHeaderContent={() => (
-            <tr className="w-full relative z-10 scale-110 bg-black">
-              <th className="px-4 py-2 border border-white/30  bg-white/10 text-white font-semibold text-center">
+            <tr className="w-full relative z-10 scale-110 bg-white dark:bg-black dark:text-white">
+              <th className="px-4 py-2 border border-white/30  bg-white/10 text-black dark:bg-black dark:text-white font-semibold text-center">
                 Address
               </th>
-              <th className="px-4 py-2 border border-white/30 bg-white/10 text-white font-semibold text-center">
+              <th className="px-4 py-2 border border-white/30 bg-white/10 text-black dark:bg-black dark:text-white font-semibold text-center">
                 Value
               </th>
             </tr>
