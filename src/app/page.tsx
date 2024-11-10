@@ -7,38 +7,30 @@ import BinaryGrid from "@/components/Binary";
 import Link from "next/link";
 export default function Home() {
   useEffect(() => {
-    gsap.fromTo(
+    const tl = gsap.timeline();
+    tl.fromTo(
       ".binary",
       {
-        opacity: 0,
         scale: 4,
-        duration: 1.5,
-        delay: 1,
-        ease: "power2.out",
       },
       {
-        opacity: 1,
         scale: 1,
         duration: 1.5,
         ease: "power2.out",
-      },
-    );
-    gsap.fromTo(
+      }
+    ).fromTo(
       ".desc",
       {
         opacity: 0,
         y: 50,
-        duration: 2.5,
-        delay: 3,
-        ease: "power2.out",
       },
       {
         opacity: 1,
         y: 0,
-        delay: 3,
         duration: 2.5,
         ease: "power2.out",
       },
+      "-=0.75" // Start this animation 0.75 seconds after the previous one (so they overlap)
     );
   }, []);
 
@@ -53,14 +45,22 @@ export default function Home() {
           className="absolute h-[30%] w-[50%] flex items-center justify-center  text-7xl font-extrabold"
         >
           <div className="flex flex-col items-center justify-center">
-            <div className="p-5 text-white text-7xl z-10">
+            <div
+              style={{
+                color: "lightsteelblue",
+              }}
+              className="p-5 z-10"
+            >
               <ScrambleText />
             </div>
-            <div className="text-xl text-center opacity-0 desc text-white">
-              A simple to use and elegant 8085 simulator
+            <div className="mb-1 text-xl text-center desc text-white">
+              <p>
+                Experience the thrill of Animated Binary Visuals with
+                Interactive Features.
+              </p>
             </div>
             <Link href="/sim">
-              <button className="text-xl opacity-0 desc border text-white get-started p-3 hover:shadow-none  m-3 w-fit ">
+              <button className="desc text-xl opacity-0 border-2 text-white get-started p-3 hover:shadow-none hover:rounded-md hover:bg-white hover:text-black m-3 w-fit ">
                 Get Started
               </button>
             </Link>

@@ -36,6 +36,7 @@ export default function Binary() {
             animationDelay: `${delay}s`,
             fontSize: `${fontSize}px`,
           }}
+          id="main-title"
           className="flex animate-pulse items-center text-stone-900 justify-center rounded pointer-events-none"
         >
           {value}
