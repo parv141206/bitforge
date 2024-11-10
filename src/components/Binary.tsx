@@ -1,25 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export default function BinaryGrid() {
+interface GridItem {
+  id: number;
+  delay: number;
+  fontSize: number;
+  value: number;
+}
+export default function Binary() {
+  const gridSize = 240;
+  const [items, setItems] = useState<GridItem[]>([]);
+
+  useEffect(() => {
+    const generatedItems = Array.from({ length: gridSize }).map((_, index) => {
+      const randomDelay = Math.random() * 5;
+      const randomFontSize = Math.random() * 30 + 20;
+      return {
+        id: index,
+        delay: randomDelay,
+        fontSize: randomFontSize,
+        value: Math.round(Math.random()),
+      };
+    });
+    setItems(generatedItems);
+  }, [gridSize]);
+
   return (
     <div
-      style={{ gridTemplateColumns: "repeat(20, 1fr)", userSelect: "none" }}
-      className="grid  pointer-events-none container mx-auto gap-1 h-[100%]  w-[80%] items-center justify-center"
+      style={{ gridTemplateColumns: "repeat(40, 1fr)", userSelect: "none" }}
+      className="grid grid-cols-40 gap-1 h-full w-full"
     >
-      {Array.from({ length: 140 }).map((_, index) => {
-        return (
-          <div
-            key={index}
-            style={{
-              animationDelay: `${Math.random() * 5}s`,
-              fontSize: `${Math.random() * 30 + 20}px`,
-            }}
-            className={`flex animate-pulse  items-center text-stone-900 justify-center  rounded `}
-          >
-            {Math.round(Math.random())}
-          </div>
-        );
-      })}
+      {items.map(({ id, delay, fontSize, value }) => (
+        <div
+          key={id}
+          style={{
+            animationDelay: `${delay}s`,
+            fontSize: `${fontSize}px`,
+          }}
+          className="flex animate-pulse items-center text-stone-900 justify-center rounded pointer-events-none"
+        >
+          {value}
+        </div>
+      ))}
     </div>
   );
 }
