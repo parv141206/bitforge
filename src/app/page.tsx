@@ -17,7 +17,7 @@ export default function Home() {
         scale: 1,
         duration: 1.5,
         ease: "power2.out",
-      }
+      },
     ).fromTo(
       ".desc",
       {
@@ -30,7 +30,7 @@ export default function Home() {
         duration: 2.5,
         ease: "power2.out",
       },
-      "-=0.75" // Start this animation 0.75 seconds after the previous one (so they overlap)
+      "-=0.75",
     );
   }, []);
 
@@ -55,8 +55,8 @@ export default function Home() {
             </div>
             <div className="mb-1 text-xl text-center desc text-white">
               <p>
-                Experience the thrill of Animated Binary Visuals with
-                Interactive Features.
+                Unleash the power of retro computing with our 8085
+                simulator—where classic code meets modern innovation!
               </p>
             </div>
             <Link href="/sim">

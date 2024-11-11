@@ -7,15 +7,14 @@ const ScrambleText = () => {
       const messageArray = message.split("");
       let currentIndex = 0;
       let scrambleCount = 0;
-      let scrambledMessage = Array(message.length).fill(" "); // Initialize with spaces
+      let scrambledMessage = Array(message.length).fill(" ");
 
       const textElement = document.getElementById("main-title");
 
       function updateMessage() {
-        // Replace a character with a random one
         if (currentIndex < messageArray.length) {
           scrambledMessage[currentIndex] = abcd.charAt(
-            Math.floor(Math.random() * abcd.length)
+            Math.floor(Math.random() * abcd.length),
           );
           if (textElement) {
             textElement.innerText = scrambledMessage.join("");
@@ -23,7 +22,6 @@ const ScrambleText = () => {
 
           scrambleCount++;
 
-          // After 5 scrambles, replace with the actual character
           if (scrambleCount === 5) {
             scrambledMessage[currentIndex] = messageArray[currentIndex];
             currentIndex++;
@@ -31,19 +29,16 @@ const ScrambleText = () => {
           }
         }
 
-        // Stop when the entire message has been revealed
         if (currentIndex === messageArray.length) {
           if (textElement) {
-            textElement.innerText = message; // Final output
+            textElement.innerText = message;
           }
-          return; // Stop the animation
+          return;
         }
 
-        // Request the next frame
         requestAnimationFrame(updateMessage);
       }
 
-      // Start the scrambling effect
       updateMessage();
     }
 
