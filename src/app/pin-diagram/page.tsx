@@ -15,37 +15,35 @@ export default function PinDiagram() {
   const { theme } = useTheme();
 
   useEffect(() => {
-    // Animate the title and body text
     gsap.fromTo(
       ".title",
       { opacity: 0, y: -50 },
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
     );
 
     gsap.fromTo(
       ".icon",
       { opacity: 0, y: -150 },
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
     );
 
     gsap.fromTo(
       ".body",
       { opacity: 0, y: 100 },
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
     );
 
     gsap.fromTo(
       ".f1",
       { opacity: 0 },
-      { opacity: 1, duration: 1, delay: 2, ease: "power2.out" }
+      { opacity: 1, duration: 1, delay: 2, ease: "power2.out" },
     );
   }, []);
 
   return (
     <div
-      className={`container mx-auto ${
-        theme === "dark" ? "dark bg-black text-white" : "bg-white text-black"
-      }   flex items-center min-h-[screen] flex-col justify-center px-12 gap-5 mt-20`}
+      className={`container mx-auto dark bg-black text-white 
+      flex items-center min-h-[screen] flex-col justify-center px-12 gap-5 mt-20`}
     >
       <Link
         href={"/sim"}
@@ -190,8 +188,8 @@ function PinFunctions({ pinNumber }: { pinNumber: number }) {
             pinNumber === 7
               ? "RST 7.5"
               : pinNumber === 8
-              ? "RST 6.5"
-              : "RST 5.5"
+                ? "RST 6.5"
+                : "RST 5.5"
           }
           description="RST 7.5, RST 6.5 and RST 5.5 are maskable and vectored interrupt pins. They have lower priority than the TRAP interrupt and can be masked by the SIM instruction. When an interrupt occurs via any one of these pins, it has to be acknowledged by the microprocessor."
         />
@@ -227,18 +225,18 @@ function PinFunctions({ pinNumber }: { pinNumber: number }) {
             pinNumber === 12
               ? "AD0"
               : pinNumber === 13
-              ? "AD1"
-              : pinNumber === 14
-              ? "AD2"
-              : pinNumber === 15
-              ? "AD3"
-              : pinNumber === 16
-              ? "AD4"
-              : pinNumber === 17
-              ? "AD5"
-              : pinNumber === 18
-              ? "AD6"
-              : "AD7"
+                ? "AD1"
+                : pinNumber === 14
+                  ? "AD2"
+                  : pinNumber === 15
+                    ? "AD3"
+                    : pinNumber === 16
+                      ? "AD4"
+                      : pinNumber === 17
+                        ? "AD5"
+                        : pinNumber === 18
+                          ? "AD6"
+                          : "AD7"
           }
           description="The pins labeled AD0 to AD7 are multiplexed address/data pins. This means that these pins can be used to transfer both address and data. These normally carry the lower 8 bits when transferring the address. The fact that these are used as address bus or data bus is controlled by the ALE pin (pin number 30)."
         />
@@ -266,18 +264,18 @@ function PinFunctions({ pinNumber }: { pinNumber: number }) {
             pinNumber === 21
               ? "A8"
               : pinNumber === 22
-              ? "A9"
-              : pinNumber === 23
-              ? "A10"
-              : pinNumber === 24
-              ? "A11"
-              : pinNumber === 25
-              ? "A12"
-              : pinNumber === 26
-              ? "A13"
-              : pinNumber === 27
-              ? "A14"
-              : "A15"
+                ? "A9"
+                : pinNumber === 23
+                  ? "A10"
+                  : pinNumber === 24
+                    ? "A11"
+                    : pinNumber === 25
+                      ? "A12"
+                      : pinNumber === 26
+                        ? "A13"
+                        : pinNumber === 27
+                          ? "A14"
+                          : "A15"
           }
           description="The pins labeled A8 to A15 are dedicated address pins. These pins are used to transfer the upper 8 bits of the address when accessing memory."
         />

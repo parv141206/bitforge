@@ -51,68 +51,63 @@ export default function Sim() {
     // Create a new timeline
     let tl = gsap.timeline();
 
-    // Animate 'program'
     tl.fromTo(
       ".program",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" } // Reduced duration
+      { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
     );
 
-    // Animate 'memory' and 'registers' after 'program'
     tl.fromTo(
       ".memory",
       { opacity: 0, y: -1000 },
       { opacity: 1, y: 0, duration: 1.5, ease: "power1.inOut" },
-      "<" // Start at the same time as 'program'
+      "<",
     );
 
     tl.fromTo(
       ".register",
       { opacity: 0, x: 1000 },
       { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
-      "<" // Start at the same time as 'memory'
+      "<",
     );
 
-    // Animate 'nextInst' and 'exec' simultaneously after 'program'
     tl.fromTo(
       ".nextInst",
       { opacity: 0, x: -1000 },
       { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
-      "<" // Start after 'program' (no delay)
+      "<",
     );
 
     tl.fromTo(
       ".exec",
       { opacity: 0, x: -1000 },
       { opacity: 1, x: 0, duration: 1.5, ease: "power1.inOut" },
-      "<" // Start after 'program' (no delay)
+      "<",
     );
 
-    // Animate 'currentInst' after all previous elements
     tl.fromTo(
       ".currentInst",
       { opacity: 0, scale: 0.1 },
       { opacity: 1, scale: 1, duration: 1.5, ease: "power1.inOut" },
-      "<" // Start after 'nextInst' and 'exec'
+      "<",
     );
 
-    // Animate 'flag', 'about', and 'tbl' in sequence
     tl.fromTo(
       ".flag",
       { opacity: 0, x: -1000 },
-      { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" },
     );
 
     tl.fromTo(
       ".about",
       { opacity: 0, x: 1000 },
-      { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" }
+      { opacity: 1, x: 0, duration: 1, ease: "power1.inOut" },
     );
 
     tl.fromTo(
       ".tbl",
       { opacity: 0 },
-      { opacity: 1, duration: 1.5, ease: "power1.inOut" }
+      { opacity: 1, duration: 1.5, ease: "power1.inOut" },
     );
   }, []);
   const resetRegisters = () => {
@@ -139,7 +134,7 @@ export default function Sim() {
             operand,
           value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
         })),
-      })
+      }),
     );
 
     parseInstructions(
@@ -149,7 +144,7 @@ export default function Sim() {
       flags,
       setFlags,
       memory,
-      setMemory
+      setMemory,
     );
   };
   const nextInstruction = () => {
@@ -164,13 +159,13 @@ export default function Sim() {
             operand,
           value: operandsValues[instruction.mnemonic]?.[operand]?.value || "",
         })),
-      })
+      }),
     );
     const result = parseInstruction(
       parsedData[currentInstructionIndex],
       registers,
       flags,
-      memory
+      memory,
     );
     newRegisters = result.registers;
     newFlags = result.flags;
@@ -186,7 +181,7 @@ export default function Sim() {
   return (
     <div className={`${theme}`}>
       <div
-        className={`grid grid-cols-8  grid-rows-8 h-screen gap-5 bg-stone-100 dark:bg-black dark:text-white px-5 py-5`}
+        className={`grid grid-cols-8  grid-rows-8 h-screen gap-5 bg-stone-50 dark:bg-black dark:text-white px-5 py-5`}
       >
         <div className="program md:col-span-4 flex flex-col row-span-4 relative border border-stone-300  dark:border-white/20 rounded-xl p-3">
           <div className="text-slate-800 text-3xl w-full flex justify-between items-center  pb-3 dark:text-white">
@@ -266,7 +261,7 @@ export default function Sim() {
         >
           Execute All
         </button>
-        <div className="currentInst col-span-4 row-span-2 col-start-3 row-start-5 border border-stone-300 dark:border-white/30 rounded-xl p-3">
+        <div className="currentInst col-span-2 row-span-2 col-start-3 row-start-5 border border-stone-300 dark:border-white/30 rounded-xl p-3">
           <h1 className="title text-3xl pb-3">Current Instruction</h1>
           <hr className="mb-3" />
           <p>
@@ -276,7 +271,7 @@ export default function Sim() {
               : "No instruction selected"}
           </p>
         </div>
-        <div className="col-span-2 memory flex flex-col row-span-4 col-start-5 row-start-1 border border-stone-300 dark:border-white/30 rounded-xl p-3 ">
+        <div className="col-span-2 memory flex flex-col row-span-6 col-start-5 row-start-1 border border-stone-300 dark:border-white/30 rounded-xl p-3 ">
           <h1 className="title text-3xl pb-3">Memory</h1>
           <MemoryTable memory={memory} />
         </div>
@@ -359,14 +354,14 @@ export default function Sim() {
                       {7 - index === 7
                         ? "S"
                         : 7 - index === 6
-                        ? "Z"
-                        : 7 - index === 4
-                        ? "AC"
-                        : 7 - index === 2
-                        ? "P"
-                        : 7 - index === 0
-                        ? "C"
-                        : "X"}
+                          ? "Z"
+                          : 7 - index === 4
+                            ? "AC"
+                            : 7 - index === 2
+                              ? "P"
+                              : 7 - index === 0
+                                ? "C"
+                                : "X"}
                     </td>
                   ))}
                 </tr>
@@ -423,7 +418,7 @@ const MemoryTable = ({ memory }: { memory: Memory }) => {
 
   const filteredMemory = useMemo(() => {
     return Object.entries(memory).filter(([key]) =>
-      key.toLowerCase().includes(searchTerm.toLowerCase())
+      key.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [memory, searchTerm]);
 

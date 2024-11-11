@@ -18,13 +18,13 @@ export default function Arch() {
     tl.fromTo(
       ".title",
       { opacity: 0, y: -50 },
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
     )
       .fromTo(
         ".body",
         { opacity: 0, y: 20 },
         { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
-        "-=0.5" // Start this animation half a second before the previous one ends
+        "-=0.5", // Start this animation half a second before the previous one ends
       )
       .fromTo(
         ".image-container",
@@ -35,7 +35,7 @@ export default function Arch() {
           opacity: 1,
           duration: 1.5,
           ease: "power2.out",
-        } // Scale up and rotate to original position
+        }, // Scale up and rotate to original position
       );
 
     return () => {
@@ -44,10 +44,10 @@ export default function Arch() {
   }, []);
 
   return (
-    <div ref={app}>
+    <div className="dark" ref={app}>
       <div
-        className={`container mx-auto ${
-          theme === "dark" ? "dark bg-black text-white" : "bg-white text-black"
+        className={`container mx-auto 
+          bg-black text-white
         } flex items-center min-h-screen flex-col justify-center px-12 gap-5 mt-20`}
       >
         <Link
